@@ -1,0 +1,30 @@
+---
+ Environments:
+   Hadoop and Solr:
+     Masters:
+       - Master 1:
+         Type: "VM"
+         IP: "10.114.10.1/24"
+         Memory: "128GB"
+         Disk: "2TB"
+         Cores: 8
+       - Master 2:
+         Type: "VM"
+         IP: "10.114.10.2/24"
+         Memory: "128GB"
+         Disk: "2TB"
+         Cores: 8
+     Workers:
+       - Worker 1:
+         Type: "Physical"
+         IP: "10.114.10.3/24"
+         Memory: "370GB"
+         Disk: "2TBx8"
+         Cores: 32
+       - Master 2:
+         Type: "VM"
+         IP: "10.114.10.4/24"
+         Memory: "370GB"
+         Disk: "2TBx8"
+         Cores: 32   
+      
