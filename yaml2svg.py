@@ -11,18 +11,22 @@ import svgwrite
 
 
 # Globals and other helper functions
-yaml = YAML()
 
 
 def main(args):
     logging.debug("Entering Main function")
     logging.debug(args)
 
+    yaml = YAML()
+    dwg = svgwrite.Drawing(args.output, profile='tiny')
+
     yaml_file = args.input
     yaml_dict = yaml.load(yaml_file)
     # logging.debug(yaml_dict)
     # logging.debug(yaml_dict['Environments'])
-    logging.debug(yaml_dict['Environments']['Hadoop and Solr']['Masters'][0]['Type'])
+    # logging.debug(yaml_dict['Environments']['Hadoop and Solr']['Masters'][0]['Type'])
+
+    dwg.save()
     return 0
 
 
