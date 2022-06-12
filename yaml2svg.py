@@ -5,9 +5,12 @@
 import sys
 import logging
 import argparse
-from tokenize import String
+#from tokenize import String
 from ruamel.yaml import YAML
-import svgwrite
+#from diagram import DiagramBuilder
+from diagrams import Cluster,Diagram
+from diagrams.onprem.compute import Server
+import json
 
 
 # Globals and other helper functions
@@ -18,15 +21,36 @@ def main(args):
     logging.debug(args)
 
     yaml = YAML()
-    dwg = svgwrite.Drawing(args.output, profile='tiny')
 
     yaml_file = args.input
     yaml_dict = yaml.load(yaml_file)
-    # logging.debug(yaml_dict)
-    # logging.debug(yaml_dict['Environments'])
+    yaml_file.close()
+    #logging.debug(yaml_dict)
+    #logging.debug(yaml_dict['Environments'])
     # logging.debug(yaml_dict['Environments']['Hadoop and Solr']['Masters'][0]['Type'])
 
-    dwg.save()
+    #diag = DiagramBuilder(title="Test", filename=args.output.split(".")[0], format=args.output.split(".")[1])
+
+    # for item in yaml_dict.keys():
+    #    if item == "Environments":
+    #        pass
+
+    environments = yaml_dict['Environments']
+    logging.debug(json.dumps(environments, sort_keys=False, indent=4))
+    connections = yaml_dict['Connections']
+    logging.debug(json.dumps(connections, sort_keys=False, indent=4))
+
+    with Diagram(
+            name=yaml_dict['Name'],
+            filename=args.output.split(".")[0],
+            outformat=args.output.split(".")[1],
+            show=True):
+        for env in environments.keys():
+            logging.debug("Checking " + env)
+            if environments[env]["Type"] == "Network":
+                logging.debug("Network found: " + env)
+        
+
     return 0
 
 

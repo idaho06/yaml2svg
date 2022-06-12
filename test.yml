@@ -1,7 +1,12 @@
 ---
+ Name: "Hadoop and Solr EU-PROD"
  Environments:
    Hadoop and Solr:
+     Type: "Network"
+     Label: "10.141.10.0/24"
      Masters:
+       Type: "Role"
+       Nodes:
        - Master 1:
          Type: "VM"
          IP: "10.114.10.1/24"
@@ -15,16 +20,23 @@
          Disk: "2TB"
          Cores: 8
      Workers:
+       Type: "Role"
+       Nodes:
        - Worker 1:
          Type: "Physical"
          IP: "10.114.10.3/24"
          Memory: "370GB"
          Disk: "2TBx8"
          Cores: 32
-       - Master 2:
+       - Worker 2:
          Type: "VM"
          IP: "10.114.10.4/24"
          Memory: "370GB"
          Disk: "2TBx8"
          Cores: 32   
-      
+   EU-VPN:
+     Type: "Network"
+     Label: "10.141.10.0/24"
+ Connections:
+   - Worker 1: Master 1
+   - EU-VPN: Hadoop and Solr
