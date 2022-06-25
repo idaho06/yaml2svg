@@ -1,42 +1,127 @@
 ---
- Name: "Hadoop and Solr EU-PROD"
- Environments:
-   Hadoop and Solr:
-     Type: "Network"
-     Label: "10.141.10.0/24"
-     Masters:
-       Type: "Role"
-       Nodes:
-       - Master 1:
-         Type: "VM"
-         IP: "10.114.10.1/24"
-         Memory: "128GB"
-         Disk: "2TB"
-         Cores: 8
-       - Master 2:
-         Type: "VM"
-         IP: "10.114.10.2/24"
-         Memory: "128GB"
-         Disk: "2TB"
-         Cores: 8
-     Workers:
-       Type: "Role"
-       Nodes:
-       - Worker 1:
-         Type: "Physical"
-         IP: "10.114.10.3/24"
-         Memory: "370GB"
-         Disk: "2TBx8"
-         Cores: 32
-       - Worker 2:
-         Type: "VM"
-         IP: "10.114.10.4/24"
-         Memory: "370GB"
-         Disk: "2TBx8"
-         Cores: 32   
-   EU-VPN:
-     Type: "Network"
-     Label: "10.141.10.0/24"
- Connections:
-   - Worker 1: Master 1
-   - EU-VPN: Hadoop and Solr
+Name: "Hadoop and Solr EU-PROD"
+Environments:
+  Hadoop and Solr:
+    Type: "Network"
+    Subnet: "10.141.10.0/24"
+    Gateways:
+      Type: "Role"
+      Nodes:
+        - Name: "prd-eu01-dlg01.solera.farm"
+          Type: "VM"
+          IP: "10.141.10.59"
+          Memory: "16GB"
+          Cores: 4
+          Disk: "/data 1TB\n/u00 1.4TB"
+          OS: "CentOS 7.9"
+          Services:
+            - Name: "Knox 1"
+              Type: "Knox"
+              NoLabel: True
+            - Name: "SSH 1"
+              Type: "Ssh"
+              NoLabel: True
+        - Name: "prd-eu01-dlg02.solera.farm"
+          Type: "VM"
+          IP: "10.141.10.60"
+          Memory: "16GB"
+          Cores: 4
+          Disk: "/data 1TB\n/u00 1.4TB"
+          OS: "CentOS 7.9"
+          Services:
+            - Name: "Knox 2"
+              Type: "Knox"
+              NoLabel: True
+            - Name: "SSH 2"
+              Type: "Ssh"
+              NoLabel: True
+    Masters:
+      Type: "Role"
+      Nodes:
+        - Name: "prd-eu01-dlm01.solera.farm"
+          Type: "VM"
+          IP: "10.141.10.55"
+          Memory: "128GB"
+          Disk: "/data 1TB\n/u00 1.4TB"
+          Cores: 8
+          OS: "CentOS 7.9"
+          Services:
+            - Name: "Ambari"
+              Type: "Ambari"
+              NoLabel: True
+            - Name: "Zookeeper 1"
+              Type: "Zookeeper"
+            - Name: "NameNode"
+              Type: "Hadoop"
+            - Name: "JournalNode"
+              Type: "Hadoop"
+            - Name: "Hive Metastore"
+              Type: "Hive"
+        - Name: "prd-eu01-dlm02.solera.farm"
+          Type: "VM"
+          IP: "10.141.10.56"
+          Memory: "128GB"
+          Disk: "/data 1TB\n/u00 1.4TB"
+          Cores: 8
+          OS: "CentOS 7.9"
+          Services:
+            - Name: "Zookeeper 2"
+              Type: "Zookeeper"
+            - Name: "NameNode"
+              Type: "Hadoop"
+            - Name: "Hive Metastore"
+              Type: "Hive"
+    Workers:
+      Type: "Role"
+      Nodes:
+        - Name: "Worker 1"
+          Type: "Physical"
+          IP: "10.114.10.3"
+          Memory: "370GB"
+          Disk: "2TBx8"
+          Cores: 32
+          Services:
+            - Name: "Datanode"
+              Type: "Hadoop"
+            - Name: "NodeManager"
+              Type: "Hadoop"
+        - Name: "Worker 2"
+          Type: "Physical"
+          IP: "10.114.10.4"
+          Memory: "370GB"
+          Disk: "2TBx8"
+          Cores: 32
+  EU-VPN:
+    Type: "Network"
+    Subnet: "10.141.10.0/24"
+    Nodes:
+      - Name: "EU Users"
+        Type: "Users"
+  Administrators:
+    Type: "Role"
+    Users:
+      - Name: "Admins"
+        Type: "Users"
+        NoLabel: True
+  Nodes:
+    - Name: "isolated.solera.farm"
+      Type: "VM"
+      IP: "10.114.33.32"
+      Cores: 2
+      Memory: "32GB"
+
+Connections:
+  - Master 2: "EU Users"
+    Worker 2: "EU Users"
+    Type: reverse
+    Color: red
+    Style: dotted
+  - EU Users: Datanode
+    Label: "SSH"
+  - Worker 2: Master 2
+    Type: double
+  - "NameNode": "Datanode"
+    Type: line
+    Style: bold
+  - "Worker 2": "isolated.solera.farm"
+    Type: reverse
