@@ -7,7 +7,7 @@ Environments:
     Gateways:
       Type: "Role"
       Nodes:
-        - Name: "prd-eu01-dlg01.solera.farm"
+        - Name: "gateway01.example.com"
           Type: "VM"
           IP: "10.141.10.59"
           Memory: "16GB"
@@ -21,7 +21,7 @@ Environments:
             - Name: "SSH 1"
               Type: "Ssh"
               NoLabel: True
-        - Name: "prd-eu01-dlg02.solera.farm"
+        - Name: "gateway02.example.com"
           Type: "VM"
           IP: "10.141.10.60"
           Memory: "16GB"
@@ -38,7 +38,7 @@ Environments:
     Masters:
       Type: "Role"
       Nodes:
-        - Name: "prd-eu01-dlm01.solera.farm"
+        - Name: "master01.example.com"
           Type: "VM"
           IP: "10.141.10.55"
           Memory: "128GB"
@@ -51,13 +51,15 @@ Environments:
               NoLabel: True
             - Name: "Zookeeper 1"
               Type: "Zookeeper"
-            - Name: "NameNode"
+            - Name: "NameNode 1"
               Type: "Hadoop"
-            - Name: "JournalNode"
+            - Name: "JournalNode 1"
               Type: "Hadoop"
             - Name: "Hive Metastore"
               Type: "Hive"
-        - Name: "prd-eu01-dlm02.solera.farm"
+            - Name: "Infra Solr 1"
+              Type: "Solr"
+        - Name: "master02.example.com"
           Type: "VM"
           IP: "10.141.10.56"
           Memory: "128GB"
@@ -67,30 +69,75 @@ Environments:
           Services:
             - Name: "Zookeeper 2"
               Type: "Zookeeper"
-            - Name: "NameNode"
+            - Name: "NameNode 2"
               Type: "Hadoop"
-            - Name: "Hive Metastore"
-              Type: "Hive"
+            - Name: "Infra Solr 2"
+              Type: "Solr"
+        - Name: "master03.example.com"
+          Type: "VM"
+          IP: "10.141.10.57"
+          Memory: "128GB"
+          Disk: "/data 1TB\n/u00 1.4TB"
+          Cores: 8
+          OS: "CentOS 7.9"
+          Services:
+            - Name: "Zookeeper 3"
+              Type: "Zookeeper"
+            - Name: "Infra Solr 3"
+              Type: "Solr"
+        - Name: "master04.example.com"
+          Type: "VM"
+          IP: "10.141.10.58"
+          Memory: "128GB"
+          Disk: "/data 1TB\n/u00 1.4TB"
+          Cores: 8
+          OS: "CentOS 7.9"
+          Services:
+            - Name: "Infra Solr 4"
+              Type: "Solr"
+            - Name: "Oozie"
+              Type: "Oozie"
+            - Name: "Spark History server"
+              Type: "Spark"
     Workers:
       Type: "Role"
       Nodes:
-        - Name: "Worker 1"
+        - Name: "worker01.example.com"
           Type: "Physical"
           IP: "10.114.10.3"
           Memory: "370GB"
           Disk: "2TBx8"
           Cores: 32
+          OS: "CentOS 7.9"
           Services:
-            - Name: "Datanode"
+            - Name: "Datanode 1"
               Type: "Hadoop"
-            - Name: "NodeManager"
+            - Name: "NodeManager 1"
               Type: "Hadoop"
-        - Name: "Worker 2"
+        - Name: "worker02.example.com"
           Type: "Physical"
           IP: "10.114.10.4"
           Memory: "370GB"
           Disk: "2TBx8"
           Cores: 32
+          OS: "CentOS 7.9"
+          Services:
+            - Name: "Datanode 2"
+              Type: "Hadoop"
+            - Name: "NodeManager 2"
+              Type: "Hadoop"
+        - Name: "worker03.example.com"
+          Type: "Physical"
+          IP: "10.114.10.5"
+          Memory: "370GB"
+          Disk: "2TBx8"
+          Cores: 32
+          OS: "CentOS 7.9"
+          Services:
+            - Name: "Datanode 3"
+              Type: "Hadoop"
+            - Name: "NodeManager 3"
+              Type: "Hadoop"
   EU-VPN:
     Type: "Network"
     Subnet: "10.141.10.0/24"

@@ -16,6 +16,7 @@ from diagrams.onprem.client import Users
 from diagrams.onprem.analytics import Hadoop
 from diagrams.onprem.analytics import Hive
 from diagrams.onprem.network import Zookeeper
+from diagrams.onprem.search import Solr
 from diagrams.custom import Custom
 import json
 
@@ -119,6 +120,21 @@ def iterateList(nodes_list):
                 label = makeLabel(nolabel=nolabel, name=name)
                 GRAPH_ELEMENTS[name] = Zookeeper(
                     label=label)
+            elif type == "Solr":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = Solr(
+                    label=label)
+            elif type == "Oozie":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = Custom(
+                    label=label, icon_path="./icons/oozie.png")
+            elif type == "Spark":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = Custom(
+                    label=label, icon_path="./icons/spark.png")
             else:
                 name = node.get("Name", "")
                 GRAPH_ELEMENTS[name] = Custom(
