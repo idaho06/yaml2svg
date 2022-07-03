@@ -12,11 +12,17 @@ from ruamel.yaml import YAML
 from diagrams import Cluster, Diagram, Edge
 from diagrams.onprem.compute import Server
 from diagrams.oci.compute import VM
+from diagrams.oci.network import LoadBalancer
 from diagrams.onprem.client import Users
 from diagrams.onprem.analytics import Hadoop
 from diagrams.onprem.analytics import Hive
 from diagrams.onprem.network import Zookeeper
 from diagrams.onprem.search import Solr
+from diagrams.onprem.database import HBase
+from diagrams.onprem.database import MySQL
+from diagrams.onprem.queue import Kafka
+from diagrams.onprem.monitoring import Grafana
+from diagrams.azure.identity import ActiveDirectory
 from diagrams.custom import Custom
 import json
 
@@ -46,6 +52,8 @@ def makeLabel(**kwargs):
             pre = "RAM: "
         elif key == "disk":
             pre = "Disks: "
+        elif key == "epg":
+            pre = "EPG: "
         if value != "":
             label += f"{cr}{pre}{value}{post}"
     return label
@@ -122,9 +130,16 @@ def iterateList(nodes_list):
                     label=label)
             elif type == "Solr":
                 name = node.get("Name", "")
-                label = makeLabel(nolabel=nolabel, name=name)
+                ip = node.get("IP", "")
+                memory = node.get("Memory", "")
+                disk = node.get("Disk", "")
+                cores = node.get("Cores", "")
+                operating_system = node.get("OS", "")
+                machine = node.get("Machine", "")
+                label = makeLabel(nolabel=nolabel, name=name, ip=ip, machine=machine,
+                                  operating_system=operating_system, cores=cores, memory=memory, disk=disk)
                 GRAPH_ELEMENTS[name] = Solr(
-                    label=label)
+                    label=label, icon_path="./icons/streamsets.png")
             elif type == "Oozie":
                 name = node.get("Name", "")
                 label = makeLabel(nolabel=nolabel, name=name)
@@ -135,12 +150,74 @@ def iterateList(nodes_list):
                 label = makeLabel(nolabel=nolabel, name=name)
                 GRAPH_ELEMENTS[name] = Custom(
                     label=label, icon_path="./icons/spark.png")
+            elif type == "HBase":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = HBase(
+                    label=label)
+            elif type == "MySql":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = MySQL(
+                    label=label)
+            elif type == "Kafka":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = Kafka(
+                    label=label)
+            elif type == "Grafana":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = Grafana(
+                    label=label)
+            elif type == "LoadBalancer":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = LoadBalancer(
+                    label=label)
+            elif type == "ActiveDirectory":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = ActiveDirectory(
+                    label=label)
+            elif type == "Zeppelin":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = Custom(
+                    label=label, icon_path="./icons/zeppelin_classic_logo.png")
+            elif type == "Ranger":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = Custom(
+                    label=label, icon_path="./icons/ranger.png")
+            elif type == "Kerberos":
+                name = node.get("Name", "")
+                label = makeLabel(nolabel=nolabel, name=name)
+                GRAPH_ELEMENTS[name] = Custom(
+                    label=label, icon_path="./icons/kerberos.png")
+            elif type == "NFS":
+                name = node.get("Name", "")
+                ip = node.get("IP", "")
+                exports = node.get("Exports", "")
+                label = makeLabel(nolabel=nolabel, name=name, ip=ip, exports=exports)
+                GRAPH_ELEMENTS[name] = Custom(
+                    label=label, icon_path="./icons/nfs.png")
+            elif type == "Streamsets":
+                name = node.get("Name", "")
+                ip = node.get("IP", "")
+                memory = node.get("Memory", "")
+                disk = node.get("Disk", "")
+                cores = node.get("Cores", "")
+                operating_system = node.get("OS", "")
+                machine = node.get("Machine", "")
+                label = makeLabel(nolabel=nolabel, name=name, ip=ip, machine=machine,
+                                  operating_system=operating_system, cores=cores, memory=memory, disk=disk)
+                GRAPH_ELEMENTS[name] = Custom(
+                    label=label, icon_path="./icons/streamsets.png")
             else:
                 name = node.get("Name", "")
                 GRAPH_ELEMENTS[name] = Custom(
                     label=name, icon_path="./icons/unknown.png")
-            # TODO: Ambari node
-            # TODO: Zookeeper node
 
 
 def iterateEnvironment(env_dict):
@@ -152,7 +229,8 @@ def iterateEnvironment(env_dict):
                 logging.debug("Network found: " + env_key)
                 #label = env_key + "\n" + env_dict[env_key]["Subnet"]
                 subnet = env_dict[env_key].get("Subnet", "")
-                label = makeLabel(name=env_key, subnet=subnet)
+                epg = env_dict[env_key].get("EPG", "")
+                label = makeLabel(name=env_key, epg=epg, subnet=subnet)
                 GRAPH_ELEMENTS[env_key] = Cluster(label=label)
                 with GRAPH_ELEMENTS[env_key]:
                     iterateEnvironment(env_dict=env_dict[env_key])
@@ -211,7 +289,9 @@ def main(args):
             name=yaml_dict['Name'],
             filename=args.output.split(".")[0],
             outformat=args.output.split(".")[1],
-            show=args.show):
+            show=args.show,
+            direction="TB",
+            curvestyle="curved"):
         iterateEnvironment(env_dict=environments)
         interateConnections(conn_list=connections)
 
