@@ -311,7 +311,7 @@ if __name__ == "__main__":
         "-d", "--debug", help="Debug level: DEBUG, INFO, WARNING, ERROR or CRITICAL", default="WARNING")
     parser.add_argument("-erro", "--erroroutput",
                         help="File of error output. Default is stderr.", default="stderr")
-    parser.add_argument("input", help="Input YAML file.",
+    parser.add_argument("input", help="Input YAML file. Default is stdin.",
                         nargs='?', type=argparse.FileType(mode='r', encoding="UTF-8"), default=sys.stdin)
     args = parser.parse_args()
 
