@@ -1,4 +1,7 @@
 /.venv
+/.vscode
 output.svg
+output.png
 /__pycache__
 *~
+
